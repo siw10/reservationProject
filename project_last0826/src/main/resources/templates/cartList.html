@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+ <th:block th:fragment="content"/> 
+ <th:block th:replace="~{/fragment/header::setContent(~{this::content}) }"/> 
+<head>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<title>장바구니목록</title>
+<style type="text/css">
+.cartlist{
+border: 1px solid gray;
+width: 700px;
+height: 150px;
+margin: auto;
+display: flex;
+border-radius: 1em;
+margin-bottom: 15px;
+}
+.wantSelect{
+margin: auto 0;
+}
+
+.wantSelect>input{
+width: 30px; height: 25px;
+}
+
+.bookingPhoto{
+/* border: solid 1px red;테스트용 */
+text-align: center;
+font-size: 15px;
+margin: auto 0;
+margin-left: 15px;
+}
+
+.bookingPhoto>img{
+width: 120px; height: 130px;
+}
+
+.bookinginfo{
+margin-top: auto;
+/*border: solid 1px blak; 테스트용 */
+}
+.bookinginfo>ul{
+/*border: solid 1px blue; 테스트용 */
+list-style:none;
+padding-left: 0px;
+margin-bottom: 3px;
+margin-left: 20px;
+} 
+.bookinginfo li{
+/*border: solid 1px pink; 테스트용*/
+font-size: 15px;
+}
+
+.bookingPrice{
+margin-top: auto;
+margin-left: auto;
+margin-right: 25px;
+font-size: 15px;
+float: right;
+
+}
+
+
+.cartBtn{
+display: flex;
+margin: 0 auto;
+width: 700px;
+}
+
+.pageBar{
+width:382px;
+text-align: center; 
+margin: 0 auto;
+}
+
+
+/* 페이징 스타일 */
+
+ .page_wrap {
+   text-align:center;
+   font-size:0;
+}
+.page_nation {
+   display:inline-block;
+}
+.page_nation .none {
+   display:none;
+}
+.page_nation a {
+   display:block;
+   margin:0 3px;
+   float:left;
+   border:1px solid #e6e6e6;
+   width:28px;
+   height:28px;
+   line-height:28px;
+   text-align:center;
+   background-color:#fff;
+   font-size:13px;
+   color:#999999;
+   text-decoration:none;
+}
+.page_nation .arrow {
+   border:1px solid #ccc;
+}
+.page_nation a.active {
+   background-color:#42454c;
+   color:#fff;
+   border:1px solid #42454c;
+}
+ 
+
+</style>
+</head>
+<meta charset="UTF-8">
+<body>
+
+<!-- 예약내역 한개의 모든 내용을 담는 박스 변수를 이용해서
+예약내역이 여러개일 경우 아래 박스가 복제되어 늘어나도록 해야함 -->
+	
+
+<div th:if="${cartList.size()} != 0">
+	<div class="allCheckBox"  style="width: 700px;margin: 0 auto;" onclick="getCheckedCntAll()">
+	  <input type="checkbox" id="allResult" name="allCheck" style="text-align: left; margin-left: 2px; width: 32px; height: 32px;" >
+	  <span class="cartDivision" style="width: 700px; margin: auto; text-align: center; ">&nbsp;No.&emsp;&emsp;테마사진&emsp;&nbsp;&emsp;담긴정보&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;금 액</span>
+	</div>
+</div>
+
+<div th:if="${cartList.size()} != 0" style="overflow:auto; max-height: 480px; width: 730px; margin: 0 auto;">
+   <div class="allContent" th:each="cartList,listStat: ${cartList}" >
+	
+	
+   <div class="cartlist">
+      <!-- 원하는 상품 선택하는 체크박스 -->
+      <div class="wantSelect">
+         <input type="checkbox" id="checks" th:attrappend=" id=${listStat.index}" name="rowCheck" onclick="getCheckedCnt()" th:value="${cartList.getCno()}">
+         <span th:text="${cartList.getCno()}" style="margin: 0 15px;">예약번호</span>
+      </div>
+      
+ <!-- 메모장 내용이 들어갈 곳  -->     
+      <!-- 이미지 설정 -->
+      <div class ="bookingPhoto">
+        <img id="title" alt="예약내역이미지" src="" th:attrappend=" id=${listStat.index}" > 
+      </div>
+      
+      
+      <!-- 예약상세분류, 예약날짜 -->
+      <div class ="bookinginfo">
+        <ul>
+          <li id="themeName" th:text="${cartList.getThemeName()}" th:attrappend=" id=${listStat.index}"></li>
+          <li th:text="${cartList.getBookingDate()}+' 예약'"></li>
+         </ul>
+      </div>
+      
+       <!-- 해당테마가격 불러오기 -->
+      <div class ="bookingPrice" id="prices" th:attrappend=" id=${listStat.index}" th:text="${cartList.getPrice()}" th:value="${cartList.getPrice()}">      
+   </div>
+</div>   
+
+</div> <!-- 예약정보를 담고있는 div의 끝 -->
+</div>
+
+ <div th:if="${cartList.size()} == 0" style="margin: 70px 0;">
+<div class=empty-cart style="text-align: center;">
+        <img src="/images/empty-cart.png" alt="My Image" width="40" height="40" style="margin-bottom: 15px;"><br>
+        <p style="color:gray;">장바구니가 비었습니다.<br>
+         원하는 상품을 담아 채워주세요!<br>
+</div><br><br>
+
+ 		<ul style="font-size: 10px; color: gray;">
+          <li style="font-size: 15px;">장바구니는 최대 15개의 상품을 담을 수 있습니다.</li>
+          <li style="font-size: 15px;">한 패키지당 3%의 포인트가 적립됩니다.</li>
+          <li style="font-size: 15px;">장바구니는 회원전용 페이지로 로그아웃 시 보이지 않습니다.</li>
+        </ul>
+</div>
+
+
+
+<div th:if="${cartList.size()} != 0">
+<!-- 예약개수와 총 금액 표기란 -->
+<div class="totalPri" style=" margin: 0 auto; text-align:justify; width: 700px;">
+   <span>총&emsp;<span id="result" style="text-align:left; font-size: 20px; width: auto;  display:inline-block;">0</span><span>건</span></span>
+<!--    <span style="text-align:right; font-size: 20px; width: auto; display:inline-block; float: right;">합계:price원</span> 
+ --></div>
+
+<!-- 예약하기버튼 -->
+<div class="cartBtn">
+  <button class="btn btn-danger" type="button" id="booking" name="booking" style="width:500px; margin: 0 auto 0 0;" onclick="saveValue()">예약하기</button>
+  <button class="btn btn-secondary del" type="button" id="bookingDel" name="bookingDel" style="width:150px; margin: 0 0 0 auto;" onclick="deleteValue()">삭제하기</button>
+ </div>
+</div>
+
+ 
+</body>
+<th:block th:replace="~{/fragment/footer::setContent(~{this::content}) }"/>
+
+
+<!-- 스크립트 -->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script type="text/javascript">
+
+
+// 개별 체크박스를 클릭 했을때 계산되는 총 건
+ function getCheckedCnt()  {
+	  // 선택된 목록 가져오기
+	  const query = 'input[name="rowCheck"]:checked';
+	  const selectedElements = 
+	      document.querySelectorAll(query);
+	  
+	  // 선택된 목록의 갯수 세기
+	  const selectedElementsCnt =
+	        selectedElements.length;
+	   
+	  // 출력
+	  document.getElementById('result').innerText
+	    = selectedElementsCnt;
+		} 
+		
+		
+// 전체 체크박스를 클릭했을때 계산되는 총 건		
+ function getCheckedCntAll()  {
+	  // 선택된 목록 가져오기
+	  const query = 'input[name="rowCheck"]:checked';
+	  const selectedElements = 
+	      document.querySelectorAll(query);
+	  
+	  // 선택된 목록의 갯수 세기
+	  const selectedElementsCnt =
+	        selectedElements.length;
+	  // 까지는 동일하게 
+	  
+	
+	if('input[name="rowCheck"]:checked' == 'input[name="rowCheck"]'){ 
+		// 만약 선택된 항목과 전체 항목이 같을때, allCheck 버튼을 누른다면
+		selectedElementsCnt == 0;
+		// 선택 갯수를 모두 취소하여 총 0건이 됨
+		
+	}else{ 
+		// 선택항목이 된 것이 있고 안된것이 있다면 allCheck를 누를 시, 전체 선택이 되어
+		document.getElementById('result').innerText
+	    = selectedElementsCnt;
+		// 선택 갯수만큼 세줌
+		
+	}
+	  
+		}
+
+
+/* all체크 박스 체크 유무 설정  */
+$(function(){
+	var chkObj = document.getElementsByName("rowCheck");
+	var rowCnt = chkObj.length;
+	
+	/* var prices  = new Array();
+    var num = new Array();
+    var totalPrice = 0;
+    $("[id^='prices']").each(function() {
+    	prices.push($(this).text()); 
+    });
+    
+    $("input[type=checkbox][name='rowCheck']").click(function(){
+	    $("input:checkbox[id^='checks']").each(function(i) {
+	    	alert(totalPrice);
+	    	if($("input:checkbox[id^='checks']:checked")){
+	    		var a = "prices"+(i+1);
+	    		num.push($("[id="+a+"]").text());
+	    	}
+	    	alert(num);
+	    });
+	    for(var i=0; i<num.length; i++){
+	    	totalPrice+=prices[num[i]];
+	    	
+		    
+	    }
+	    alert(totalPrice);
+		    $("[id^='prices']").text(totalPrice);
+    }); */
+    
+    
+	$("input[name='allCheck']").click(function(){
+		var chk_listArr = $("input[name='rowCheck']");
+		for (var i=0; i<chk_listArr.length; i++) {
+			chk_listArr[i].checked = this.checked;
+			
+		
+		}
+	});
+	/* 개별체크 박스 체크 유무 설정 */	
+	$("input[name='rowCheck']").click(function(){
+		rowCnt = chkObj.length;
+		if($("input[name='rowCheck']:checked").length == rowCnt){
+			$("input:checkbox[name='allCheck']").prop("checked", true);
+		}
+		else{
+			$("input:checkbox[name='allCheck']").prop("checked", false);
+		}
+	});
+	
+	
+	$("input[type=checkbox][name='rowCheck']").change(function(){
+		if ($(this).is(':checked')){
+			$("[id='cartPrice']").each(function(i) {
+				
+			});
+		}
+	
+	
+	});
+
+});
+/* 예약하기 버튼 처리 */	
+function saveValue(){
+	var valueArr = new Array();
+	$("input:checkbox[name=rowCheck]:checked").each(function(i,iVal) {
+		valueArr.push(this.value);
+	});
+	
+	
+	if(valueArr.length==0){
+		alert("선택된 항목이 없습니다.")
+	}else{
+		var chk = confirm("선택 항목을 예약하시겠습니까?");
+		$.ajax({
+			url : "/cartSave", //전송 url
+			type : 'POST', //POST 방식
+			traditional : true,
+			data : {
+				valueArr : valueArr //보내고자 하는 data 변수 설정
+			},
+			success: function(jdata){
+				if(jdata == true){
+					alert("예약 성공");
+					location.replace("cartList") //list로 페이지 새로고침
+				}
+				else{
+					alert("예약 실패");
+				}
+			}
+		});
+	}
+}
+
+/* 삭제하기 버튼 처리 */	
+function deleteValue(){
+	var valueArr = new Array();
+	$("input:checkbox[name=rowCheck]:checked").each(function(i,iVal) {
+		valueArr.push(this.value);
+	});
+	
+	var chk = confirm("정말 삭제하시겠습니까?");
+	
+	if(valueArr.length==0){
+		alert("선택된 항목이 없습니다.")
+	}else if(chk == true){
+		$.ajax({
+			url : "/cartDelete", //전송 url
+			type : 'POST', //POST 방식
+			traditional : true,
+			data : {
+				valueArr : valueArr //보내고자 하는 data 변수 설정
+			},
+			success: function(jdata){
+				if(jdata == 1){
+					alert("삭제 성공");
+					location.replace("cartList") //list로 페이지 새로고침
+				}
+				else{
+					alert("삭제 실패");
+				}
+			}
+		});
+	}
+}
+
+/* 테마 관련 이미지 띄우기 */
+ 	window.onload=function(){
+    var themeNames  = new Array();
+	
+    $("[id^='themeName']").each(function() {
+    	themeNames.push($(this).text()); 
+    });
+    
+    
+    $("[id^='title']").each(function(i) {
+   	
+   
+
+        if(themeNames[i] == '견생사진') {
+        	$(this).attr('src','../images/concept15.jpg');
+
+        }else if(themeNames[i] == '증멍사진'){
+        	$(this).attr('src','../images/id5.jpg');
+
+        }else if(themeNames[i] == "멍멍이와 함께"){
+        	$(this).attr('src','../images/with dog16.jpg');
+        	
+        }else if(themeNames[i] == '멍스파'){
+        	$(this).attr('src','../images/spa1.jpg');
+        	
+        }else if(themeNames[i] == '멍수영장'){
+        	$(this).attr('src','../images/swimdog1.jpg');
+        }
+    });
+  }  
+
+
+
+
+
+</script>
+<script src="http://code.jquery.com/jquery-latest.js"></script> 
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+</html>

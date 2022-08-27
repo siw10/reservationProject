@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+ <th:block th:fragment="content"/> 
+ <th:block th:replace="~{/fragment/header::setContent(~{this::content}) }"/> 
+<head>
+ <!--   <link rel="stylesheet" href="/resources/blog/index.css"> -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<!--  폰트 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&family=Sunflower&display=swap" rel="stylesheet">
+<style>
+ body {
+  margin: 0;
+  
+} 
+
+.container1 {
+  width: 50%;
+  overflow: hidden;
+  place-items: center;
+  
+}
+.imagess {
+  width: 100%;
+  height: auto;
+}
+.imagess img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+ @media(min-width: 640px) {
+  .container1 {
+    margin : 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    grid-auto-flow: row dense;
+  }
+  .imagesFlex1 {
+    display: grid;
+    row-gap: 20px;
+  }
+  .imagesFlex2 {
+    display: grid;
+    row-gap: 20px;
+  }
+  .imagesFlex3 {
+    display: grid;
+    row-gap: 20px;
+  }
+}
+.star_rating {
+	font-size: 0;
+	letter-spacing: -4px;
+}
+
+.star_rating a {
+	font-size: 22px;
+	letter-spacing: 0;
+	display: inline-block;
+	margin-left: 5px;
+	color: #ccc;
+	text-decoration: none;
+}
+
+.star_rating a:first-child {
+	margin-left: 0;
+}
+
+.star_rating a.on {
+	color: gold;
+}
+
+</style>
+</head>
+<body>
+<div class="button" style="text-align: center;">
+		<a class="btn btn-sm btn-outline-secondary" href="#con1">상품설명</a> <a
+			class="btn btn-sm btn-outline-secondary" href="#review">상품후기</a><br> <br>
+</div>
+ <div id="con1" class="container1" >
+    <div class="imagess">
+      <div class="imagesFlex1">
+        <img src="/images/with dog10.jpg">       
+        <img src="/images/with dog16.jpg">
+        <img src="/images/with dog5.jpg">
+      </div>
+    </div>
+    <div class="imagess">
+      <div class="imagesFlex2">
+        <img src="/images/with dog12.jpg">
+        <img src="/images/with dog3.jpg">
+        <img src="/images/with dog6.jpg">
+    
+      </div>
+    </div>
+    <div class="imagess">
+      <div class="imagesFlex3">
+        <img src="/images/with dog15.jpg">
+        <img src="/images/with dog4.jpg">
+        <img src="/images/with dog8.jpg">
+       
+      </div>
+    </div>
+  </div>
+ 
+  <div class="content" style="text-align : center;font-family: 'Gowun Dodum', sans-serif;">
+   <p style="font-size : 25px; font-weight: bold;">With Meong</p>
+   <p style="font-size: 16px;">1. 촬영은 기본 35,000원부터 시작해 사이즈 및 구성원에 따라 추가 요금이 나올 수 있습니다.<br><br>
+      2. 액자의 기본 가격은 15,000원으로 크기에 따라 추가 요금이 나올 수 있습니다.</p><br>
+   <a class="btn btn-sm btn-outline-secondary" href="/reservation/photo/familyreserPage" >예약하기</a><br>
+  </div><br>
+   
+      <div class="card" id="review">
+		<table class="table" style="table-layout: fixed; text-align: center;">
+			<thead>
+				<tr>
+					<th>후기</th>
+					<th>별점</th>
+					<th>작성일</th>
+					<th>작성자</th>
+				</tr>
+			</thead>
+			<tbody style="table-layout: fixed; text-align: center;">
+				<tr style="background-color: white;" id="review-box" th:each="review : ${reviews}">
+					<td th:if="${review.getBtype() == '포토'}" id="review-${review.getRno()}"><span
+						th:text="${review.getContent()}"></span></td>
+					<td th:if="${review.getBtype() == '포토'}"><p class="star_rating">
+							<a th:if="${review.getScope() != 0}" class="on"
+								th:each="num : ${#numbers.sequence(0, review.getScope()-1)}">★</a>
+						</p>
+					</td>
+					<td th:if="${review.getBtype() == '포토'}" th:text="${review.getReviewDate()}">
+					<td th:if="${review.getBtype() == '포토'}">
+						<div th:text="${review.getUsername()}"></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<ul class="pagination justify-content-center">
+			<th:block th:if="${reviews.first == true}">
+				<li class="page-item disabled"><a class="page-link"
+					th:href="@{/photo/family/(page=${reviews.number-1})}">Previous</a></li>
+			</th:block>
+			<th:block th:unless="${reviews.first == true}">
+				<li class="page-item"><a class="page-link"
+					th:href="@{/photo/family/(page=${reviews.number-1})}">Previous</a></li>
+			</th:block>
+			<li class="page-item" th:classappend="${i == reviews.pageable.pageNumber + 1}? 'disabled'" th:each="i : ${#numbers.sequence(startPage, endPage)}"><a class="page-link"
+						th:href="@{/photo/family(page=${i -1})}" th:text="${i}">1</a></li>
+			<th:block th:if="${reviews.last == true}">
+				<li class="page-item disabled"><a class="page-link"
+					th:href="@{/photo/family/(page=${reviews.number+1})}">Next</a></li>
+			</th:block>
+			<th:block th:unless="${reviews.last == true}">
+				<li class="page-item"><a class="page-link"
+					th:href="@{/photo/family/(page=${reviews.number+1})}">Next</a></li>
+			</th:block>
+		</ul>
+	</div>
+ 
+  <!-- Custom styles for this template -->
+    <link href="https://fonts.googleapis.com/css?family=Playfair&#43;Display:700,900&amp;display=swap" rel="stylesheet">
+    <!-- Custom styles for this template -->
+ 
+
+</body>
+<th:block th:replace="~{/fragment/footer::setContent(~{this::content}) }"/>
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</html>
